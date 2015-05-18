@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/jquery.dataTables.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            padding-top: 50px;
+            text-align:center;
+        }
+
+        #submit {
+            width:10%;
+            height:40px;
+        }
+    </style>
+
+    <title>干货管理</title>
+
+    <!-- JS -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.5.4.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            AV.initialize('xxxxxx', 'xxxxxx');
+
+            var GanHuo = AV.Object.extend('ganhuo');
+
+            var query = new AV.Query(GanHuo);
+            query.equalTo("used", false);
+            query.find({
+                success: function(results) {
+                    for (var i = 0; i < results.length; i++) {
+                        var object = results[i];
+                        var dateString = object.updatedAt.getFullYear() + "-" + object.updatedAt.getMonth() + "-" + object.updatedAt.getDay()
+                        var urlString = "<a href='" + object.get('url') + "'>" + object.get('url') + "</a>"
+                        t.row.add( [
+                            object.id,
+                            object.get('type'),
+                            urlString,
+                            object.get('desc'),
+                            object.get('who'),
+                            dateString,
+                            object.get('used') ? "已用" : "未用"
+                        ] ).draw();
+                    }
+                },
+                error: function(error) {
+                    alert("Error: " + error.code + " " + error.message);
+                }
+            });
+
+
+            // Table
+            var t = $('#ganhuo').DataTable();
+            $('#ganhuo tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected');
+            } );
+
+            $('#submit').click( function () {
+                var datas = t.rows('.selected').data();
+                for (var i = 0; i < datas.length; i++) {
+                    query.get(datas[i][0], {
+                        success: function(item) {
+                            item.set('used', true);
+                            item.save();
+                            t.rows('.selected').remove().draw();
+                        },
+                        error: function(object, error) {
+                            console.log(object);
+                        }
+                    });
+                }
+            } );
+
+        });
+    </script>
+</head>
+<body>
+
+
+<div class="container">
+    <div>
+        <h1>干货列表</h1>
+        <table id="ganhuo" class="display" cellspacing="0" width="100%">
+            <thead>
+            <td>编号</td>
+            <td>类别</td>
+            <td>链接</td>
+            <td>描述</td>
+            <td>提供者</td>
+            <td>更新时间</td>
+            <td>状态</td>
+            </thead>
+        </table>
+    </div>
+
+    <div>
+        <button id="submit" style="margin-left: auto; margin-right: auto">
+            使用
+        </button>
+    </div>
+
+    <!--<textarea id="text" style="width: 100%; height: 400px">-->
+
+        <!--<h2><img alt="" src="" style="height:800px; width:600px" /></h2>-->
+
+        <!--<h2>昨日大事件：</h2>-->
+
+        <!--<p><a href="http://tech.163.com/15/0514/02/APHTM1DP00094ODV.html">微信、支付宝&ldquo;烧钱&rdquo;抢夺超市支付</a>&nbsp;（你们可劲儿的烧）</p>-->
+
+        <!--<p><a href="http://tech.163.com/15/0514/02/APHRS4L0000915BF.html">人人公司苦寻新增长点，这次是社交金融</a>（博士生都很穷就别说本科生了，捞钱你找错人了）</p>-->
+
+        <!--<h2>Android</h2>-->
+
+        <!--<p>1.<a href="https://github.com/guanchao/ScrollerCalendar" target="_blank">ScrollerCalendar：</a>&nbsp;一个日历（有时放纵）</p>-->
+
+        <!--<p>2<a href="https://github.com/Yalantis/CameraModule" target="_blank">.CameraModule</a>&nbsp;：一个简单地android摄像头模块（有时放纵）</p>-->
+
+        <!--<p>3.<a href="https://github.com/JorgeCastilloPrz/PagedHeadListView" target="_blank">PagedHeadListView：</a>让listview的头列表动起来（有时放纵）</p>-->
+
+        <!--<p>4.<a href="https://github.com/LuckyJayce/MVCHelper" target="_blank">MVCHelper</a>：实现下拉刷新与滚动底部自动加载更多分页加载等，支持任意view（Jason）</p>-->
+
+        <!--<p>5.<a href="https://github.com/bumptech/glide" target="_blank">glide</a>：Google官方推荐的一个图片加载库（Jason）</p>-->
+
+        <!--<p>6.<a href="https://github.com/takahirom/PreLollipopTransition" target="_blank">PreLollipopTransition</a>: 实现 Lolipop 之前的版本的动画过度兼容效果。（代码家）</p>-->
+
+        <!--<p>&nbsp;</p>-->
+
+        <!--<h2>iOS</h2>-->
+
+        <!--<p>1.&nbsp;<a href="http://natashatherobot.com/watchkit-check-device-screen-size-in-code/">WatchKit: How to Check Device Screen Size in Code</a>：如何检测 Watch 的尺寸。(CallMeWhy)</p>-->
+
+        <!--<p>2.<a href="http://iosdevtips.co/post/118711491198/avoid-retain-cycles-weak-strong">&nbsp;Tip: Avoid retain cycles without doing the strong to weak dance</a>：如何在不用 strong 和 weak 的前提下避免循环引用。(CallMeWhy)</p>-->
+
+        <!--<p>3.&nbsp;<a href="http://natashatherobot.com/watchkit-text-over-animating-image/">WatchKit: How to Place Text Over An (Animating) Image</a>：如何在 Watch 的文字上方放置图片。(CallMeWhy)</p>-->
+
+        <!--<p>4.&nbsp;<a href="http://realm.io/news/jesse-squires-core-data-swift/">Building a QR Code Generator with Core Image Filters</a>&nbsp; 通过Core Image Filters 建立二维码生成器 (Andrew Liu)</p>-->
+
+        <!--<p>5.&nbsp;&nbsp;<a href="http://www.appcoda.com/dropbox-api-tutorial/">How to Use Dropbox API in iOS Apps</a>&nbsp;&nbsp;iOS应用中使用Dropbox API (Andrew Liu)</p>-->
+
+        <!--<p>&nbsp;</p>-->
+
+        <!--<p>瞎推荐：</p>-->
+
+        <!--<p>1. &nbsp;<a href="http://9-eyes.com/" target="_blank">Google 街景里有趣的图片</a></p>-->
+
+        <!--<p>&nbsp;</p>-->
+
+        <!--<h2>休息 休息一下</h2>-->
+
+        <!--<p><a href="http://www.vlook.cn/show/qs/YklkPTIyNDI5MTgmdWlkPTQ0NzQzNDA=" target="_blank">史上最逆天的表演！</a></p>-->
+
+        <!--<p><a href="http://www.vlook.cn/show/qs/YklkPTIyNDI5MTgmdWlkPTQ0NzQzNDA="><img alt="" src="http://ww1.sinaimg.cn/large/610dc034jw1es3mplvixpj20hb0aet9c.jpg" style="height:374px; width:623px" /></a></p>-->
+
+        <!--<p>&nbsp;</p>-->
+
+        <!--<p>感谢所有持续付出的编辑们。</p>-->
+
+        <!--<p>今天干货就这些啦，愿大家有个美好的周四。</p>-->
+
+        <!--<p>&nbsp;</p>-->
+
+        <!--<h1>&nbsp;</h1>-->
+
+    <!--</textarea>-->
+
+
+</div><!-- /.container -->
+
+
+
+
+
+</html>
